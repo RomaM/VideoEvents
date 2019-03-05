@@ -2,13 +2,13 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  entry: {
-    app: './src/index.js'
-  },
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     // filename: '[name].bundle.js',
-    filename: '[name].js',
+    filename: 'index.js',
+    library: 'VELib',
+    libraryTarget: 'umd',
     publicPath: 'dist'
   },
   module: {
@@ -45,8 +45,8 @@ module.exports = {
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional
-      filename: "[name].css",
-      chunkFilename: "[id].css"
+      filename: "main.css",
+      chunkFilename: "check.css"
     })
   ],
   devServer: {

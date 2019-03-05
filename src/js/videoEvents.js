@@ -6,7 +6,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 // Video Events Main Class
-class VideoEvents {
+export class VideoEvents {
   constructor(pageName, mainBlock, video, form) {
     this.pageName = pageName;
     this.mainBlock = mainBlock;
@@ -81,6 +81,7 @@ class VideoEvents {
   // Method: Main initialization method for a page
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
+      console.log('Video Events Initialized')
       // Initialization of variables
       let userKey = localStorage.getItem('userKey');
       let uid = localStorage.getItem('userID');
@@ -217,14 +218,3 @@ class VideoEvents {
   }
 }
 
-// Creating a entity of the Video Events Class
-var newVideo = new VideoEvents(
-  'Test-Page-Name',
-  document.getElementsByTagName('body')[0],
-  document.getElementById('video'),
-  document.getElementById('form'));
-
-// Start Video Events processing
-if (newVideo) {
-  newVideo.init();
-}

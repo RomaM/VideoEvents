@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Video Events</title>
-	<link rel="stylesheet" href="/dist/app.css">
+	<link rel="stylesheet" href="dist/main.css">
 	
 	<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-app.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-database.js"></script>
@@ -30,6 +30,20 @@
 	..and more content
 </div>
 
-<script src="/dist/app.js"></script>
+<script src="dist/index.js"></script>
+<script type="text/javascript">
+  // Creating a entity of the Video Events Class
+	
+   var newVideo = new VELib.VideoEvents(
+     'Test-Page-Name',
+     document.getElementsByTagName('body')[0],
+     document.getElementById('video'),
+     document.getElementById('form'));
+
+   // Start Video Events processing
+   if (newVideo) {
+     newVideo.init();
+   }
+</script>
 </body>
 </html>
