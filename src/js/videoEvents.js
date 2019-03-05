@@ -1,17 +1,13 @@
-import {firebaseConfig} from './configs';
 import {DataModel} from './dataModel';
-
-firebase.initializeApp(firebaseConfig);
-
-const database = firebase.database();
 
 // Video Events Main Class
 export class VideoEvents {
-  constructor(pageName, mainBlock, video, form) {
+  constructor(pageName, mainBlock, video, form, database) {
     this.pageName = pageName;
     this.mainBlock = mainBlock;
     this.video = video;
     this.form = form;
+    this.database = database;
   }
 
   // Method: User ID creating
@@ -26,11 +22,11 @@ export class VideoEvents {
   setEvents(data) {
     let userKey = localStorage.getItem('userKey');
     if (userKey) {
-      database.ref(`UserEvents/${this.pageName}/${userKey}`).set(data);
+      this.database.ref(`UserEvents/${this.pageName}/${userKey}`).set(data);
     } else {
-      const newKey = database.ref(`UserEvents/${this.pageName}`).push().key;
+      const newKey = this.database.ref(`UserEvents/${this.pageName}`).push().key;
       localStorage.setItem('userKey', newKey);
-      database.ref(`UserEvents/${this.pageName}/${newKey}`).set(data);
+      this.database.ref(`UserEvents/${this.pageName}/${newKey}`).set(data);
     }
   }
 
@@ -74,7 +70,7 @@ export class VideoEvents {
 
   // Method: Get data from server by a path
   getServerData(path) {
-    const serverData = database.ref(path);
+    const serverData = this.database.ref(path);
     return serverData.once('value');
   }
 

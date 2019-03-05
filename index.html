@@ -9,7 +9,6 @@
 	
 	<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-app.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-database.js"></script>
-
 </head>
 <body>
 <div class="block">
@@ -32,18 +31,31 @@
 
 <script src="dist/index.js"></script>
 <script type="text/javascript">
-  // Creating a entity of the Video Events Class
+  // Firebase Configuration Object and Initialization
+  var firebaseConfig = {
+    apiKey: "AIzaSyCXjTF7G_etsxxvdU3yDAm4RWUQW8YzOxc",
+    authDomain: "videoevents-e720e.firebaseapp.com",
+    databaseURL: "https://videoevents-e720e.firebaseio.com",
+    projectId: "videoevents-e720e",
+    storageBucket: "videoevents-e720e.appspot.com",
+    messagingSenderId: "551679175257"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var database = firebase.database();
 	
-   var newVideo = new VELib.VideoEvents(
-     'Test-Page-Name',
-     document.getElementsByTagName('body')[0],
-     document.getElementById('video'),
-     document.getElementById('form'));
-
-   // Start Video Events processing
-   if (newVideo) {
-     newVideo.init();
-   }
+	// Creating a entity of the Video Events Class
+	var newVideo = new VELib.VideoEvents(
+		 'Test-Page-Name',
+		 document.getElementsByTagName('body')[0],
+		 document.getElementById('video'),
+		 document.getElementById('form'),
+		 database
+	);
+	
+	// Start Video Events processing
+	if (newVideo) {
+	 newVideo.init();
+	}
 </script>
 </body>
 </html>
