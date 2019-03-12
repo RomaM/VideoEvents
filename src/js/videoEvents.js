@@ -88,7 +88,7 @@ export class VideoEvents {
       let userEvents = [];
       let seekingArr = [];
       const eventsArr =
-        ['play', 'pause', 'seeking', 'seeked', 'timeupdate', 'mouseover', 'mouseout', 'volumechange'];
+        ['play', 'pause', 'seeking', 'seeked', 'timeupdate', 'mouseover', 'mouseout', 'volumechange', 'ended'];
       let interval = null;
       let isMuted = false;
       let formFocus = false;
@@ -130,16 +130,17 @@ export class VideoEvents {
           formFocus = false;
           switch (event.type) {
             case 'seeking':
-              seekingArr.push(data);
+              // seekingArr.push(data);
               break;
             case 'seeked':
-              const started = seekingArr[0];
-              let seeking =
-                new DataModel(
-                  started.uid,started.session,started.device,started.event,started.videotime,started.timestamp
-                );
-              userEvents.push(seeking, data);
-              seekingArr = [];
+              // const started = seekingArr[0];
+              // let seeking =
+              //   new DataModel(
+              //     started.uid,started.session,started.device,started.event,started.videotime,started.timestamp
+              //   );
+              // userEvents.push(seeking, data);
+              // seekingArr = [];
+              userEvents.push(data);
               break;
             case 'timeupdate':
               break;
