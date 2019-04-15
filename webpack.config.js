@@ -5,8 +5,7 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    // filename: '[name].bundle.js',
-    filename: 'index.js',
+    filename: 'velib.js',
     library: 'VELib',
     libraryTarget: 'umd',
     publicPath: 'dist'
@@ -26,7 +25,6 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          // process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
           'style-loader',
           MiniCssExtractPlugin.loader,
           {

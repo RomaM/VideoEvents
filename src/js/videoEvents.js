@@ -1,13 +1,13 @@
-import {DataModel} from './dataModel';
+import Database from './dataBase';
+import DataModel from './dataModel';
 
 // Video Events Main Class
 export class VideoEvents {
-  constructor(pageName, mainBlock, video, form, database) {
+  constructor(pageName, mainBlock, video, form) {
     this.pageName = pageName;
     this.mainBlock = mainBlock;
     this.video = video;
     this.form = form;
-    this.database = database;
   }
 
   // Method: User ID creating
@@ -16,18 +16,6 @@ export class VideoEvents {
       const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
-  }
-
-  // Method: Send user data array to a server
-  setEvents(data) {
-    let userKey = localStorage.getItem('userKey');
-    if (userKey) {
-      this.database.ref(`UserEvents/${this.pageName}/${userKey}`).set(data);
-    } else {
-      const newKey = this.database.ref(`UserEvents/${this.pageName}`).push().key;
-      localStorage.setItem('userKey', newKey);
-      this.database.ref(`UserEvents/${this.pageName}/${newKey}`).set(data);
-    }
   }
 
   // Method: Get array of events and handle them
@@ -68,12 +56,6 @@ export class VideoEvents {
       || ( bounds.top <= viewport.bottom && bounds.top >= viewport.top );
   }
 
-  // Method: Get data from server by a path
-  getServerData(path) {
-    const serverData = this.database.ref(path);
-    return serverData.once('value');
-  }
-
   // Method: Main initialization method for a page
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
@@ -101,12 +83,11 @@ export class VideoEvents {
       } else {
         session = ++session;
         localStorage.setItem('session', session);
-        this.getServerData(`UserEvents/${this.pageName}/${userKey}`)
+
+        Database.getServerData(this.pageName, userKey)
           .then(snapshot => {
-            if (snapshot.val()) {
-              serverEvents = snapshot.val();
-            }
-          });
+            if (snapshot.val()) serverEvents = snapshot.val();
+        });
       }
 
       // User has leaved the viewport to top
@@ -114,7 +95,7 @@ export class VideoEvents {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 0) {
           const totalArr = serverEvents.concat(userEvents);
-          this.setEvents(totalArr);
+          Database.setEvents(totalArr, this.pageName, localStorage.getItem('userKey'));
         }
       };
 
@@ -149,12 +130,10 @@ export class VideoEvents {
                 isMuted = true;
                 data.event = 'muted';
                 userEvents.push(data);
-                console.log('Muted');
               } else if (this.video.volume > 0 && isMuted) {
                 isMuted = false;
                 data.event = 'unmuted';
                 userEvents.push(data);
-                console.log('Unmuted');
               }
               break;
             case 'mouseover':
@@ -197,20 +176,6 @@ export class VideoEvents {
           formFocus = true;
         }
       });
-
-      // Close/Reload tab event. Listen if a user want to close/reload this tab
-      // window.onbeforeunload = event => {
-      //   if(window.event.returnValue = 'Do you really want to close the window?'){
-      //     console.log('%cuser is trying to leave', 'color: #feb606; font-size: 18px');
-      //   }
-      //   console.log('On BeforeUnload');
-      //   this.setEvents(this.userEvents);
-      //   console.log(event);
-      // };
-
-      // window.onunload = () => {
-      //
-      // };
     });
   }
 }

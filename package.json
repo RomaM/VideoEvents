@@ -2,7 +2,7 @@
   "name": "videoeventswebpack",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/velib.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --open --hot",
     "build": "webpack --mode production"

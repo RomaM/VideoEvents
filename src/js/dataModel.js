@@ -1,5 +1,5 @@
 // User Events Model
-export class DataModel {
+export default class DataModel {
   constructor (
     uid,
     session,
