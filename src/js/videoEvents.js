@@ -108,7 +108,7 @@ export class VideoEvents {
           //   formFocus = false;
           // }
 
-          formFocus = false;
+          // formFocus = false;
           switch (event.type) {
             case 'seeking':
               // seekingArr.push(data);
