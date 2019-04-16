@@ -95,7 +95,11 @@ export class VideoEvents {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 0) {
           const totalArr = serverEvents.concat(userEvents);
-          Database.setEvents(totalArr, this.pageName, localStorage.getItem('userKey'));
+          let videoNameDuration = `${this.video.src}:duration${Math.floor(this.video.duration)}`;
+          videoNameDuration = videoNameDuration.replace(/[/.*+?^${}()|[\]\\]/g, '|');
+          let newKey =
+            Database.setEvents(totalArr, this.pageName, videoNameDuration, localStorage.getItem('userKey'));
+          if (newKey) localStorage.setItem('userKey', newKey);
         }
       };
 

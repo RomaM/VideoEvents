@@ -19,13 +19,15 @@ const Database = {
   },
 
   // Method: Send user data array to a server
-  setEvents(data, pageName, userKey) {
+  setEvents(data, pageName, videoNameDuration, userKey) {
     if (userKey) {
-      this.database.ref(`UserEvents/${pageName}/${userKey}`).set(data);
+      this.database.ref(`UserEvents/${pageName}/${videoNameDuration}/${userKey}`).set(data);
+      return null;
     } else {
-      const newKey = this.database.ref(`UserEvents/${pageName}`).push().key;
-      localStorage.setItem('userKey', newKey);
-      this.database.ref(`UserEvents/${pageName}/${newKey}`).set(data);
+      const newKey = this.database.ref(`UserEvents/${pageName}/${videoNameDuration}`).push().key;
+      // localStorage.setItem('userKey', newKey);
+      this.database.ref(`UserEvents/${pageName}/${videoNameDuration}/${newKey}`).set(data);
+      return newKey;
     }
   }
 };
