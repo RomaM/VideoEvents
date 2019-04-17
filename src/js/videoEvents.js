@@ -65,6 +65,8 @@ export class VideoEvents {
       let uid = localStorage.getItem('userID');
       let session = localStorage.getItem('session') ? localStorage.getItem('session') : 1;
       const device = navigator.userAgent ? navigator.userAgent : '';
+      let currentDate = new Date();
+      currentDate = `${currentDate.getDate()}|${currentDate.getMonth() + 1}|${currentDate.getFullYear()}`;
       let elemVisibility = this.elemOut(this.video);
       let serverEvents = [];
       let userEvents = [];
@@ -95,10 +97,13 @@ export class VideoEvents {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 0) {
           const totalArr = serverEvents.concat(userEvents);
-          let videoNameDuration = `${this.video.src}:duration${Math.floor(this.video.duration)}`;
-          videoNameDuration = videoNameDuration.replace(/[/.*+?^${}()|[\]\\]/g, '|');
+          let videoNameDuration = `${this.video.src}:duration:${Math.floor(this.video.duration)}`;
+          videoNameDuration =
+            videoNameDuration.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
+          videoNameDuration = videoNameDuration.replace(/[/.*+?^${}()|[\]\\]/g, '-');
+          let pageNameDate = `${this.pageName}:date:${currentDate}`;
           let newKey =
-            Database.setEvents(totalArr, this.pageName, videoNameDuration, localStorage.getItem('userKey'));
+            Database.setEvents(totalArr, pageNameDate, videoNameDuration, localStorage.getItem('userKey'));
           if (newKey) localStorage.setItem('userKey', newKey);
         }
       };
@@ -106,7 +111,8 @@ export class VideoEvents {
       // Listen for events on the video block
       this.multiEvents(this.video, eventsArr, (event) => {
         if (userEvents) {
-          let data = new DataModel(uid, session, device, event.type, this.video.currentTime, event.timeStamp);
+          let data =
+            new DataModel(uid, session, device, event.type, this.video.currentTime, event.timeStamp);
 
           // if (event.type != 'mouseover' || event.type != 'mouseout' && formFocus) {
           //   formFocus = false;
