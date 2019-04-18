@@ -14,7 +14,13 @@ const Database = {
 
   // Method: Get data from server by a path
   getServerData(pageName, userKey) {
-    const serverData = this.database.ref(`UserEvents/${pageName}/${userKey}`);
+    let serverData;
+    if (pageName && userKey) {
+      serverData = this.database.ref(`UserEvents/${pageName}/${userKey}`);
+    } else {
+      serverData = this.database.ref(`UserEvents`);
+    }
+
     return serverData.once('value');
   },
 

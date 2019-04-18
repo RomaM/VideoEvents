@@ -10,6 +10,13 @@ export class VideoEvents {
     this.form = form;
   }
 
+  // Static Method: Get all data from FireBase
+  static getFBData() {
+    console.log('Get Data from FB');
+    return Database.getServerData()
+      .then(snapshot => snapshot.val());
+  }
+
   // Method: User ID creating
   uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
