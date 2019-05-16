@@ -1,4 +1,5 @@
-import Database from './dataBase';
+// import Database from './dataBase';
+import Database from './WPBD';
 import DataModel from './dataModel';
 
 // Video Events Main Class
@@ -11,11 +12,11 @@ export class VideoEvents {
   }
 
   // Static Method: Get all data from FireBase
-  static getFBData() {
-    console.log('Get Data from FB');
-    return Database.getServerData()
-      .then(snapshot => snapshot.val());
-  }
+  // static getFBData() {
+  //   console.log('Get Data from FB');
+  //   return Database.getServerData()
+  //     .then(snapshot => snapshot.val());
+  // }
 
   // Method: User ID creating
   uuidv4() {
@@ -66,26 +67,28 @@ export class VideoEvents {
   // Method: Main initialization method for a page
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
-      console.log('Video Events Initialized')
+      console.log('VE Initialized.');
       // Initialization of variables
-      let userKey = localStorage.getItem('userKey');
+      // let userKey = localStorage.getItem('userKey');
+      let userCreated = localStorage.getItem('userCreated');
       let uid = localStorage.getItem('userID');
       let session = localStorage.getItem('session') ? localStorage.getItem('session') : 1;
       const device = navigator.userAgent ? navigator.userAgent : '';
       let currentDate = new Date();
-      currentDate = `${currentDate.getDate()}|${currentDate.getMonth() + 1}|${currentDate.getFullYear()}`;
+      currentDate = `${currentDate.getDate()}.${currentDate.getMonth() + 1}.${currentDate.getFullYear()}`;
       let elemVisibility = this.elemOut(this.video);
       let serverEvents = [];
       let userEvents = [];
       let seekingArr = [];
       const eventsArr =
-        ['play', 'pause', 'seeking', 'seeked', 'timeupdate', 'mouseover', 'mouseout', 'volumechange', 'ended'];
+        ['play', 'pause', 'seeking', 'seeked', 'timeupdate', 'volumechange', 'ended'];
       let interval = null;
       let isMuted = false;
       let formFocus = false;
 
       // Checking if user exist
-      if (!userKey) {
+      // if (!userKey) {
+      if (!userCreated) {
         uid = this.uuidv4();
         localStorage.setItem('userID', uid);
         localStorage.setItem('session', session);
@@ -93,25 +96,36 @@ export class VideoEvents {
         session = ++session;
         localStorage.setItem('session', session);
 
-        Database.getServerData(this.pageName, userKey)
-          .then(snapshot => {
-            if (snapshot.val()) serverEvents = snapshot.val();
-        });
+        // Database.getServerData(this.pageName, userKey)
+        //   .then(snapshot => {
+        //     if (snapshot.val()) serverEvents = snapshot.val();
+        // });
       }
 
       // User has leaved the viewport to top
       this.mainBlock.onmouseleave = event => {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 0) {
-          const totalArr = serverEvents.concat(userEvents);
-          let videoNameDuration = `${this.video.src}:duration:${Math.floor(this.video.duration)}`;
-          videoNameDuration =
-            videoNameDuration.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
-          videoNameDuration = videoNameDuration.replace(/[/.*+?^${}()|[\]\\]/g, '-');
-          let pageNameDate = `${this.pageName}:date:${currentDate}`;
-          let newKey =
-            Database.setEvents(totalArr, pageNameDate, videoNameDuration, localStorage.getItem('userKey'));
-          if (newKey) localStorage.setItem('userKey', newKey);
+          // let totalArr = serverEvents.concat(userEvents);
+          // let pageNameDate = `${this.pageName}:date:${currentDate}`;
+          // let videoNameDuration = `${this.video.src}:duration:${Math.floor(this.video.duration)}`;
+          let videoName = this.video.src;
+          videoName =
+            videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
+          videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
+          let pageName = this.pageName + '-videonameis-' + videoName;
+          const metaData = {
+            'pageName': this.pageName,
+            'videoName': videoName,
+            'videoDuration': this.video.duration
+          };
+
+          Database.setEvents(userEvents, pageName, metaData).then(
+            () => { userEvents = []; }
+          );
+
+          // if (newKey) localStorage.setItem('userKey', newKey);
+          if (!userCreated) localStorage.setItem('userCreated', true);
         }
       };
 
@@ -119,13 +133,13 @@ export class VideoEvents {
       this.multiEvents(this.video, eventsArr, (event) => {
         if (userEvents) {
           let data =
-            new DataModel(uid, session, device, event.type, this.video.currentTime, event.timeStamp);
+            new DataModel(uid, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
 
           // if (event.type != 'mouseover' || event.type != 'mouseout' && formFocus) {
           //   formFocus = false;
           // }
 
-          // formFocus = false;
+          formFocus = false;
           switch (event.type) {
             case 'seeking':
               // seekingArr.push(data);
@@ -153,13 +167,9 @@ export class VideoEvents {
                 userEvents.push(data);
               }
               break;
-            case 'mouseover':
-            case 'mouseout':
-              // formFocus ? '' : userEvents.push(data);
-              break;
             default:
               // let data =
-              //   new DataModel(uid, session, device, event.type, this.video.currentTime, event.timeStamp);
+              //   new DataModel(uid, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
               userEvents.push(data);
           }
         }
@@ -178,7 +188,7 @@ export class VideoEvents {
             let eventType = elemVisibility ? 'ScrollIn' : 'ScrollOut';
 
             let data =
-              new DataModel(uid, session, device, eventType, this.video.currentTime, event.timeStamp);
+              new DataModel(uid, session, currentDate, device, eventType, this.video.currentTime, event.timeStamp);
             userEvents.push(data);
           }
         }, 250);
@@ -188,7 +198,7 @@ export class VideoEvents {
       this.multiElementsEvent(this.form, 'input', 'focus', (event) => {
         if (!formFocus) {
           let data =
-            new DataModel(uid, session, device, 'formfocus', this.video.currentTime, event.timeStamp);
+            new DataModel(uid, session, currentDate, device, 'formfocus', this.video.currentTime, event.timeStamp);
           userEvents.push(data);
           formFocus = true;
         }
