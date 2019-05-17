@@ -8,8 +8,7 @@ const WPBD = {
   setEvents(data, pageName, metaData) {
     const requestBody = {
       'meta-field': data,
-      status: 'publish',
-      categories: [2]
+      status: 'publish'
     };
 
     return this.getPosts(pageName)
@@ -23,7 +22,8 @@ const WPBD = {
           requestBody.content = {
             raw: JSON.stringify(metaData, null, 4)
           };
-          this.setData(requestBody)
+          requestBody.categories = [2];
+          this.setData(requestBody);
         }
       });
   },
