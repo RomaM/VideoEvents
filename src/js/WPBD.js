@@ -8,7 +8,8 @@ const WPBD = {
   setEvents(data, pageName, metaData) {
     const requestBody = {
       'meta-field': data,
-      status: 'publish'
+      status: 'publish',
+      categories: [2]
     };
 
     return this.getPosts(pageName)
