@@ -113,6 +113,10 @@ export class VideoEvents {
           // let pageNameDate = `${this.pageName}:date:${currentDate}`;
           // let videoNameDuration = `${this.video.src}:duration:${Math.floor(this.video.duration)}`;
           let videoName = this.video.src;
+          if (!videoName.length) {
+            videoName = this.video.getElementsByTagName('source')[0].src;
+          }
+
           videoName =
             videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
           videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
