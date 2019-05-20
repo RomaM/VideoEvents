@@ -1,6 +1,7 @@
 // import Database from './dataBase';
-import Database from './WPBD';
+import Database from './wpdb';
 import DataModel from './dataModel';
+import deviceInfo from './deviceInfo';
 
 // Video Events Main Class
 export class VideoEvents {
@@ -68,12 +69,15 @@ export class VideoEvents {
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
       console.log('VE Initialized.');
+
       // Initialization of variables
       // let userKey = localStorage.getItem('userKey');
       let userCreated = localStorage.getItem('userCreated');
       let uid = localStorage.getItem('userID');
       let session = localStorage.getItem('session') ? localStorage.getItem('session') : 1;
-      const device = navigator.userAgent ? navigator.userAgent : '';
+      // Device data. Getting device values
+      let device = deviceInfo();
+      console.log(device);
       let currentDate = new Date();
       currentDate = `${currentDate.getDate()}.${currentDate.getMonth() + 1}.${currentDate.getFullYear()}`;
       let elemVisibility = this.elemOut(this.video);
@@ -119,6 +123,11 @@ export class VideoEvents {
             'videoName': videoName,
             'videoDuration': this.video.duration
           };
+
+          if (userEvents.length) {
+            let data = new DataModel(uid, session, currentDate, device, 'userLeave', this.video.currentTime, event.timeStamp);
+            userEvents.push(data);
+          }
 
           Database.setEvents(userEvents, pageName, metaData).then(
             () => { userEvents = []; }

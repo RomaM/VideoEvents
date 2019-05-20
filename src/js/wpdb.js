@@ -7,7 +7,7 @@ const WPBD = {
   // Method: Send user data array to a server
   setEvents(data, pageName, metaData) {
     const requestBody = {
-      'meta-field': data,
+      'meta-field': JSON.stringify(data),
       status: 'publish'
     };
 
