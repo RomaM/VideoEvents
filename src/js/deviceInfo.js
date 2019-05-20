@@ -10,7 +10,7 @@ const deviceInfo = () => {
   else if (userAgent.match(/iPod/i)) result.name = 'iPod';
   else if (userAgent.match(/BlackBerry/i)) result.name = 'BlackBerry';
   else if (userAgent.match(/Windows Phone/i)) result.name = 'WindowsPhone';
-  else result.name = 'Desctop'
+  else result.name = 'Desktop';
 
   // Result: Device Browser
   // if (userAgent.indexOf("Firefox") > -1) result.browser = "Firefox";
