@@ -71,10 +71,10 @@ export class VideoEvents {
       console.log('VE Initialized.');
 
       // Initialization of variables
-      // let userKey = localStorage.getItem('userKey');
-      let userCreated = localStorage.getItem('userCreated');
-      let uid = localStorage.getItem('userID');
-      let session = localStorage.getItem('session') ? localStorage.getItem('session') : 1;
+      // let userKey = localStorage.getItem('veUserKey');
+      let userCreated = localStorage.getItem('veUserCreated');
+      let uid = localStorage.getItem('veUserID');
+      let session = localStorage.getItem('veSession') ? localStorage.getItem('veSession') : 1;
       // Device data. Getting device values
       let device = deviceInfo();
       let currentDate = new Date();
@@ -93,11 +93,11 @@ export class VideoEvents {
       // if (!userKey) {
       if (!userCreated) {
         uid = this.uuidv4();
-        localStorage.setItem('userID', uid);
-        localStorage.setItem('session', session);
+        localStorage.setItem('veUserID', uid);
+        localStorage.setItem('veSession', session);
       } else {
         session = ++session;
-        localStorage.setItem('session', session);
+        localStorage.setItem('veSession', session);
 
         // Database.getServerData(this.pageName, userKey)
         //   .then(snapshot => {
@@ -136,8 +136,8 @@ export class VideoEvents {
             () => { userEvents = []; }
           );
 
-          // if (newKey) localStorage.setItem('userKey', newKey);
-          if (!userCreated) localStorage.setItem('userCreated', true);
+          // if (newKey) localStorage.setItem('veUserKey', newKey);
+          if (!userCreated) localStorage.setItem('veUserCreated', true);
         }
       };
 
