@@ -14,10 +14,10 @@ const WPBD = {
     return this.getPosts(pageName)
       .then(res => {
         if (res.length && data.length) {
-          console.log('%cREQUEST: ', 'color: blue;', 'PATCH');
+          // console.log('%cREQUEST: ', 'color: blue;', 'PATCH');
           this.setData(requestBody, 'PATCH', res[0].id);
         } else if (data.length) {
-          console.log('%cREQUEST: ', 'color: orange;', 'POST');
+          // console.log('%cREQUEST: ', 'color: orange;', 'POST');
           requestBody.title = pageName;
           requestBody.content = {
             raw: JSON.stringify(metaData, null, 4)
@@ -41,12 +41,14 @@ const WPBD = {
     fetch(`${this.hostname}/wp-json/wp/v2/posts/${id}`, params)
       .then( response => {
         if (response.ok) {
-          console.log('%cResponse', 'color: green;', response);
+          // console.log('%cResponse', 'color: green;', response);
           return response.json();
         }
         throw new Error(`Response from the ${this.hostname} wasn't OK!`);
       })
-      .then( data => console.log('%cData', 'color: green;', data))
+      .then( data => {
+        // console.log('%cData', 'color: green;', data)
+      })
       .catch( error => console.log('%cFetch Error: ', 'color: red;', error.message));
   },
 

@@ -77,7 +77,6 @@ export class VideoEvents {
       let session = localStorage.getItem('session') ? localStorage.getItem('session') : 1;
       // Device data. Getting device values
       let device = deviceInfo();
-      console.log(device);
       let currentDate = new Date();
       currentDate = `${currentDate.getDate()}.${currentDate.getMonth() + 1}.${currentDate.getFullYear()}`;
       let elemVisibility = this.elemOut(this.video);
