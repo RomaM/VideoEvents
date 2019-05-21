@@ -121,7 +121,7 @@ export class VideoEvents {
             videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
           videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
           let domainName = this.domain;
-          domainName = domainName.replace(/http:\/\/|https:\/\//g, '');
+          domainName = domainName.replace(/http:\/\/|https:\/\/|\//g, '');
           let pageName = domainName + '-pageis-' + this.pageName + '-videonameis-' + videoName;
           const metaData = {
             'domain': domainName,
