@@ -5,7 +5,8 @@ import deviceInfo from './deviceInfo';
 
 // Video Events Main Class
 export class VideoEvents {
-  constructor(pageName, mainBlock, video, form) {
+  constructor(domain, pageName, mainBlock, video, form) {
+    this.domain = domain;
     this.pageName = pageName;
     this.mainBlock = mainBlock;
     this.video = video;
@@ -116,12 +117,14 @@ export class VideoEvents {
           if (!videoName.length) {
             videoName = this.video.getElementsByTagName('source')[0].src;
           }
-
           videoName =
             videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
           videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
-          let pageName = this.pageName + '-videonameis-' + videoName;
+          let domainName = this.domain;
+          domainName = domainName.replace(/http:\/\/|https:\/\//g, '');
+          let pageName = domainName + '-pageis-' + this.pageName + '-videonameis-' + videoName;
           const metaData = {
+            'domain': domainName,
             'pageName': this.pageName,
             'videoName': videoName,
             'videoDuration': this.video.duration
