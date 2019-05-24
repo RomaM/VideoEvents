@@ -125,8 +125,6 @@ export class VideoEvents {
           let pageName = domainName + '-pageis-' + this.pageName + '-videonameis-' + videoName;
           const metaData = {
             'domain': domainName,
-            'pageName': this.pageName,
-            'videoName': videoName,
             'videoDuration': this.video.duration
           };
 
