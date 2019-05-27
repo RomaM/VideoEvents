@@ -2,6 +2,8 @@
 import Database from './wpdb';
 import DataModel from './dataModel';
 import deviceInfo from './deviceInfo';
+import 'isomorphic-fetch';
+import "es6-promise/auto";
 
 // Video Events Main Class
 export class VideoEvents {
@@ -106,7 +108,7 @@ export class VideoEvents {
       // User has leaved the viewport to top
       this.mainBlock.onmouseleave = event => {
         const scroll = window.scrollY || window.pageYOffset;
-        if (event.offsetY - scroll <= 0) {
+        if (event.offsetY - scroll <= 20) {
 
           let videoName = this.video.src;
           if (!videoName.length) {
@@ -123,21 +125,21 @@ export class VideoEvents {
             'videoDuration': this.video.duration
           };
 
-          if (userEvents.length) {
-            let data = new DataModel(uid, session, currentDate, device, 'userLeave', this.video.currentTime, event.timeStamp);
-            userEvents.push(data);
-          }
-
           const url = window.location.href;
-          if (url.includes('staging') || url.includes('devel') || url.includes('local')) {
+          if (url.indexOf('staging') != -1 || url.indexOf('devel') != -1 || url.indexOf('local') != -1) {
             Database.hostname = 'https://staging.marketingvideos-dashboard.com';
           } else {
             Database.hostname = 'https://marketingvideos-dashboard.com';
           }
 
-          Database.setEvents(userEvents, pageName, metaData).then(
-            () => { userEvents = []; }
-          );
+          if (userEvents.length) {
+            let data = new DataModel(uid, session, currentDate, device, 'userLeave', this.video.currentTime, event.timeStamp);
+            userEvents.push(data);
+
+            Database.setEvents(userEvents, pageName, metaData).then(
+              () => { userEvents = []; }
+            );
+          }
           if (!userCreated) localStorage.setItem('veUserCreated', true);
         }
       };
