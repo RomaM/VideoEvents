@@ -13,18 +13,13 @@ const deviceInfo = () => {
   else result.name = 'Desktop';
 
   // Result: Device Browser
-  // if (userAgent.indexOf("Firefox") > -1) result.browser = "Firefox";
-  // else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) result.browser = "Opera";
-  // else if (userAgent.indexOf("Trident") > -1) result.browser = "IE";
-  // else if (userAgent.indexOf("Edge") > -1) result.browser = "Edge";
-  // else if (userAgent.indexOf("Chrome") > -1) result.browser = "Chrome";
-  // else if (userAgent.indexOf("Safari") > -1) result.browser = "Safari";
-  // else result.browser = "unknown";
-
-  const agents = ["MSIE", "Firefox", "Safari", "Chrome", "Opera"];
-  let nIdx = agents.length - 1;
-  for (nIdx; nIdx > -1 && userAgent.indexOf(agents[nIdx]) === -1; nIdx--);
-  result.browser = agents[nIdx];
+  if (userAgent.indexOf("Firefox") > -1) result.browser = "Firefox";
+  else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) result.browser = "Opera";
+  else if (userAgent.indexOf("Trident") > -1) result.browser = "IE";
+  else if (userAgent.indexOf("Edge") > -1) result.browser = "Edge";
+  else if (userAgent.indexOf("Chrome") > -1) result.browser = "Chrome";
+  else if (userAgent.indexOf("Safari") > -1) result.browser = "Safari";
+  else result.browser = "unknown";
 
   // Result: Device Orientation
   if (window.matchMedia("(orientation: portrait)").matches) result.orientation = 'portrait';
