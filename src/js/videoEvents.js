@@ -71,8 +71,6 @@ export class VideoEvents {
     document.addEventListener( 'DOMContentLoaded', () => {
       console.log('VE Initialized.');
 
-      // Initialization of variables
-      // let userKey = localStorage.getItem('veUserKey');
       let userCreated = localStorage.getItem('veUserCreated');
       let uid = localStorage.getItem('veUserID');
       let session = localStorage.getItem('veSession') ? localStorage.getItem('veSession') : 1;
@@ -91,7 +89,6 @@ export class VideoEvents {
       let formFocus = false;
 
       // Checking if user exist
-      // if (!userKey) {
       if (!userCreated) {
         uid = this.uuidv4();
         localStorage.setItem('veUserID', uid);
@@ -110,9 +107,7 @@ export class VideoEvents {
       this.mainBlock.onmouseleave = event => {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 0) {
-          // let totalArr = serverEvents.concat(userEvents);
-          // let pageNameDate = `${this.pageName}:date:${currentDate}`;
-          // let videoNameDuration = `${this.video.src}:duration:${Math.floor(this.video.duration)}`;
+
           let videoName = this.video.src;
           if (!videoName.length) {
             videoName = this.video.getElementsByTagName('source')[0].src;
@@ -133,11 +128,16 @@ export class VideoEvents {
             userEvents.push(data);
           }
 
+          const url = window.location.href;
+          if (url.includes('staging') || url.includes('devel') || url.includes('local')) {
+            Database.hostname = 'https://staging.marketingvideos-dashboard.com';
+          } else {
+            Database.hostname = 'https://marketingvideos-dashboard.com';
+          }
+
           Database.setEvents(userEvents, pageName, metaData).then(
             () => { userEvents = []; }
           );
-
-          // if (newKey) localStorage.setItem('veUserKey', newKey);
           if (!userCreated) localStorage.setItem('veUserCreated', true);
         }
       };
@@ -148,43 +148,29 @@ export class VideoEvents {
           let data =
             new DataModel(uid, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
 
-          // if (event.type != 'mouseover' || event.type != 'mouseout' && formFocus) {
-          //   formFocus = false;
-          // }
-
-          formFocus = false;
-          switch (event.type) {
-            case 'seeking':
-              // seekingArr.push(data);
-              break;
-            case 'seeked':
-              // const started = seekingArr[0];
-              // let seeking =
-              //   new DataModel(
-              //     started.uid,started.session,started.device,started.event,started.videotime,started.timestamp
-              //   );
-              // userEvents.push(seeking, data);
-              // seekingArr = [];
-              userEvents.push(data);
-              break;
-            case 'timeupdate':
-              break;
-            case 'volumechange':
-              if (this.video.volume == 0 || this.video.muted) {
-                isMuted = true;
-                data.event = 'muted';
+            formFocus = false;
+            switch (event.type) {
+              case 'seeking':
+                break;
+              case 'seeked':
                 userEvents.push(data);
-              } else if (this.video.volume > 0 && isMuted) {
-                isMuted = false;
-                data.event = 'unmuted';
+                break;
+              case 'timeupdate':
+                break;
+              case 'volumechange':
+                if (this.video.volume == 0 || this.video.muted) {
+                  isMuted = true;
+                  data.event = 'muted';
+                  userEvents.push(data);
+                } else if (this.video.volume > 0 && isMuted) {
+                  isMuted = false;
+                  data.event = 'unmuted';
+                  userEvents.push(data);
+                }
+                break;
+              default:
                 userEvents.push(data);
-              }
-              break;
-            default:
-              // let data =
-              //   new DataModel(uid, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
-              userEvents.push(data);
-          }
+            }
         }
       });
 

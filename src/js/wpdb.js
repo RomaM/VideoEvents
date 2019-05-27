@@ -1,7 +1,6 @@
 // Firebase Configuration Object and Initialization
 
 const WPBD = {
-  // database: firebase.database(),
   hostname: 'https://staging.marketingvideos-dashboard.com',
 
   // Method: Send user data array to a server
