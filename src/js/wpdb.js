@@ -4,7 +4,7 @@ const WPBD = {
   hostname: 'https://staging.marketingvideos-dashboard.com',
 
   // Method: Send user data array to a server
-  setEvents(data, pageName, metaData) {
+  sendEvents(data, pageName, metaData) {
     const requestBody = {
       'meta-field': JSON.stringify(data),
       status: 'publish'
@@ -13,10 +13,10 @@ const WPBD = {
     return this.getPosts(pageName)
       .then(res => {
         if (res.length && data.length) {
-          // console.log('%cREQUEST: ', 'color: blue;', 'PATCH');
+          console.log('%cREQUEST: ', 'color: blue;', data);
           this.setData(requestBody, 'PATCH', res[0].id);
         } else if (data.length) {
-          // console.log('%cREQUEST: ', 'color: orange;', 'POST');
+          console.log('%cREQUEST: ', 'color: orange;', data);
           requestBody.title = pageName;
           requestBody.content = {
             raw: JSON.stringify(metaData, null, 4)
@@ -27,6 +27,7 @@ const WPBD = {
       });
   },
 
+  // Method:
   setData(requestBody, method = 'POST', id = '') {
     const params = {
       method: method,

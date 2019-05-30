@@ -25,7 +25,7 @@ const Database = {
   },
 
   // Method: Send user data array to a server
-  setEvents(data, pageName, videoNameDuration, userKey) {
+  sendEvents(data, pageName, videoNameDuration, userKey) {
     if (userKey) {
       this.database.ref(`UserEvents/${pageName}/${videoNameDuration}/${userKey}`).set(data);
       return null;
