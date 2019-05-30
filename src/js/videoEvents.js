@@ -7,12 +7,13 @@ import "es6-promise/auto";
 
 // Video Events Main Class
 export class VideoEvents {
-  constructor(domain, pageName, mainBlock, video, form) {
+  constructor(domain, pageName, mainBlock, video, form, location = 'unknown') {
     this.domain = domain;
     this.pageName = pageName;
     this.mainBlock = mainBlock;
     this.video = video;
     this.form = form;
+    this.location = location;
   }
 
   // Static Method: Get all data from FireBase
@@ -69,7 +70,7 @@ export class VideoEvents {
   }
 
   // Method: Converting and sending data to a Server
-  convertSend(domain, pageEl, videoEl, userEvents, DB, uid, session, currentDate, device, eventType, eventTS, userCreated) {
+  convertSend(domain, pageEl, videoEl, userEvents, DB, uid, location, session, currentDate, device, eventType, eventTS, userCreated) {
     let videoName = videoEl.src;
     if (!videoName.length) {
       videoName = videoEl.getElementsByTagName('source')[0].src;
@@ -95,7 +96,7 @@ export class VideoEvents {
     if (!userCreated) localStorage.setItem('veUserCreated', true);
 
     if (userEvents.arr.length > 0) {
-      let data = new DataModel(uid, session, currentDate, device, eventType, videoEl.currentTime, eventTS);
+      let data = new DataModel(uid, location, session, currentDate, device, eventType, videoEl.currentTime, eventTS);
       userEvents.arr.push(data);
 
       DB.sendEvents(userEvents.arr, pageName, metaData).then(
@@ -111,6 +112,7 @@ export class VideoEvents {
 
       let userCreated = localStorage.getItem('veUserCreated');
       let uid = localStorage.getItem('veUserID');
+      const location = this.location;
       let session = localStorage.getItem('veSession') ? localStorage.getItem('veSession') : 1;
       // Device data. Getting device values
       let device = deviceInfo();
@@ -147,7 +149,7 @@ export class VideoEvents {
       this.multiEvents(this.video, eventsArr, (event) => {
         if (userEvents.arr) {
           let data =
-            new DataModel(uid, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
+            new DataModel(uid, location, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
 
             formFocus = false;
             switch (event.type) {
@@ -188,7 +190,7 @@ export class VideoEvents {
             let eventType = elemVisibility ? 'ScrollIn' : 'ScrollOut';
 
             let data =
-              new DataModel(uid, session, currentDate, device, eventType, this.video.currentTime, event.timeStamp);
+              new DataModel(uid, location, session, currentDate, device, eventType, this.video.currentTime, event.timeStamp);
             userEvents.arr.push(data);
           }
         }, 250);
@@ -198,7 +200,7 @@ export class VideoEvents {
       this.multiElementsEvent(this.form, 'input:not([type="submit"])', 'focus', (event) => {
         if (!formFocus) {
           let data =
-            new DataModel(uid, session, currentDate, device, 'formfocus', this.video.currentTime, event.timeStamp);
+            new DataModel(uid, location, session, currentDate, device, 'formfocus', this.video.currentTime, event.timeStamp);
           userEvents.arr.push(data);
           formFocus = true;
         }
@@ -210,7 +212,7 @@ export class VideoEvents {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 20) {
           this.convertSend(
-            this.domain, this.pageName, this.video, userEvents, Database, uid, session, currentDate, device, 'userLeave', event.timeStamp, userCreated
+            this.domain, this.pageName, this.video, userEvents, Database, uid, location, session, currentDate, device, 'userLeave', event.timeStamp, userCreated
           );
         }
       };
@@ -219,7 +221,7 @@ export class VideoEvents {
       const ctaBtn = this.form.querySelectorAll('input[type="submit"]')[0];
       ctaBtn.onfocus = event => {
         this.convertSend(
-          this.domain, this.pageName, this.video, userEvents, Database, uid, session, currentDate, device, 'submit', event.timeStamp, userCreated
+          this.domain, this.pageName, this.video, userEvents, Database, uid, location, session, currentDate, device, 'submit', event.timeStamp, userCreated
         );
       }
     });

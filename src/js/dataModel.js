@@ -2,6 +2,7 @@
 export default class DataModel {
   constructor (
     uid,
+    location,
     session,
     date,
     device,
@@ -10,6 +11,7 @@ export default class DataModel {
     timestamp
   ) {
     this.uid = uid;
+    this.location = location;
     this.session = session;
     this.date = date;
     this.device = device;
