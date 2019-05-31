@@ -98,7 +98,6 @@ export class VideoEvents {
     if (userEvents.arr.length > 0) {
       let data = new DataModel(uid, location, session, currentDate, device, eventType, videoEl.currentTime, eventTS);
       userEvents.arr.push(data);
-
       DB.sendEvents(userEvents.arr, pageName, metaData).then(
         () => { userEvents.arr = []; }
       );
@@ -109,7 +108,8 @@ export class VideoEvents {
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
       console.log('VE Initialized.');
-
+      const wrapper = this.mainBlock;
+      const ctaBtn = this.form.querySelectorAll('input[type="submit"]')[0];
       let userCreated = localStorage.getItem('veUserCreated');
       let uid = localStorage.getItem('veUserID');
       const location = this.location;
@@ -208,22 +208,21 @@ export class VideoEvents {
 
       // EVENTS FOR SENDING DATA:
       // User has left the viewport to top
-      this.mainBlock.onmouseleave = event => {
+      wrapper.addEventListener('mouseleave', event => {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 20) {
           this.convertSend(
             this.domain, this.pageName, this.video, userEvents, Database, uid, location, session, currentDate, device, 'userLeave', event.timeStamp, userCreated
           );
         }
-      };
+      });
 
       // User has clicked a CTA
-      const ctaBtn = this.form.querySelectorAll('input[type="submit"]')[0];
-      ctaBtn.onfocus = event => {
+      ctaBtn.addEventListener('click', event => {
         this.convertSend(
           this.domain, this.pageName, this.video, userEvents, Database, uid, location, session, currentDate, device, 'submit', event.timeStamp, userCreated
         );
-      }
+      });
     });
   }
 }

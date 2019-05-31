@@ -18,6 +18,7 @@ const deviceInfo = () => {
   else if (userAgent.indexOf("Trident") > -1) result.browser = "IE";
   else if (userAgent.indexOf("Edge") > -1) result.browser = "Edge";
   else if (userAgent.indexOf("Chrome") > -1) result.browser = "Chrome";
+  else if (userAgent.indexOf("CriOS") > -1) result.browser = "Chrome";
   else if (userAgent.indexOf("Safari") > -1) result.browser = "Safari";
   else result.browser = "unknown";
 

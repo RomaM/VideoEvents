@@ -13,10 +13,10 @@ const WPBD = {
     return this.getPosts(pageName)
       .then(res => {
         if (res.length && data.length) {
-          console.log('%cREQUEST: ', 'color: blue;', data);
+          console.log('%cPATCH REQUEST: ', 'color: orange;', data);
           this.setData(requestBody, 'PATCH', res[0].id);
         } else if (data.length) {
-          console.log('%cREQUEST: ', 'color: orange;', data);
+          console.log('%cPOST REQUEST: ', 'color: red;', data);
           requestBody.title = pageName;
           requestBody.content = {
             raw: JSON.stringify(metaData, null, 4)
