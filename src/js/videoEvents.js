@@ -7,8 +7,8 @@ import "es6-promise/auto";
 
 // Video Events Main Class
 export class VideoEvents {
-  constructor(domain, pageName, mainBlock, video, form, location = 'unknown') {
-    this.domain = domain;
+  constructor(domain, pageName, mainBlock, video, form, location = '') {
+    this.domain = domain.replace(/http:\/\/|https:\/\/|\//g, '');
     this.pageName = pageName;
     this.mainBlock = mainBlock;
     this.video = video;
@@ -70,35 +70,18 @@ export class VideoEvents {
   }
 
   // Method: Converting and sending data to a Server
-  convertSend(domain, pageEl, videoEl, userEvents, DB, uid, location, session, currentDate, device, eventType, eventTS, userCreated) {
-    let videoName = videoEl.src;
-    if (!videoName.length) {
-      videoName = videoEl.getElementsByTagName('source')[0].src;
-    }
-    videoName =
-      videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
-    videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
-    let domainName = domain;
-    domainName = domainName.replace(/http:\/\/|https:\/\/|\//g, '');
-    let pageName = domainName + '-pageis-' + pageEl + '-videonameis-' + videoName;
+  convertSend(postId, pageName, userEvents, DB, uid, session, currentDate, device, eventType, eventTS, userCreated) {
     const metaData = {
-      'domain': domainName,
-      'videoDuration': videoEl.duration
+      'domain': this.domain,
+      'videoDuration': this.video.duration
     };
-
-    const url = window.location.href;
-    if (url.indexOf('staging') != -1 || url.indexOf('devel') != -1 || url.indexOf('local') != -1) {
-      DB.hostname = 'https://staging.marketingvideos-dashboard.com';
-    } else {
-      DB.hostname = 'https://marketingvideos-dashboard.com';
-    }
 
     if (!userCreated) localStorage.setItem('veUserCreated', true);
 
     if (userEvents.arr.length > 0) {
-      let data = new DataModel(uid, location, session, currentDate, device, eventType, videoEl.currentTime, eventTS);
+      let data = new DataModel(uid, this.location, session, currentDate, device, eventType, this.video.currentTime, eventTS);
       userEvents.arr.push(data);
-      DB.sendEvents(userEvents.arr, pageName, metaData).then(
+      DB.sendEvents(postId, userEvents.arr, pageName, metaData).then(
         () => { userEvents.arr = []; }
       );
     }
@@ -108,27 +91,52 @@ export class VideoEvents {
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
       console.log('VE Initialized.');
-      const wrapper = this.mainBlock;
+
+      // Dashboard URL
+      const dashbouardUrl = window.location.href;
+      if (dashbouardUrl.indexOf('staging') == -1 && dashbouardUrl.indexOf('devel') == -1 && dashbouardUrl.indexOf('localhost') == -1) {
+        Database.hostname = 'https://marketingvideos-dashboard.com';
+      }
+
+      // Getting JWT from the Dashboard
+      // Database.getToken().then( token => {
+      //   Database.token = token;
+      // });
+
+      let videoName = this.video.src;
+      if (!videoName.length) {
+        videoName = this.video.getElementsByTagName('source')[0].src;
+      }
+      videoName = videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
+      videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
+
+      let totalName = this.domain + '-pageis-' + this.pageName + '-videonameis-' + videoName;
+
       const ctaBtn = this.form.querySelectorAll('input[type="submit"]')[0];
       let userCreated = localStorage.getItem('veUserCreated');
       let uid = localStorage.getItem('veUserID');
-      const location = this.location;
       let session = localStorage.getItem('veSession') ? localStorage.getItem('veSession') : 1;
       // Device data. Getting device values
       let device = deviceInfo();
       let currentDate = new Date();
       currentDate = `${currentDate.getDate()}.${currentDate.getMonth() + 1}.${currentDate.getFullYear()}`;
       let elemVisibility = this.elemOut(this.video);
-      let serverEvents = [];
       let userEvents = {
         arr: []
       };
-      let seekingArr = [];
       const eventsArr =
         ['play', 'pause', 'seeking', 'seeked', 'timeupdate', 'volumechange', 'ended', 'abort', 'emptied', 'error', 'stalled'];
       let interval = null;
       let isMuted = false;
       let formFocus = false;
+
+      // Checking if a Post for a Video page is exist on the Dashboard
+      let postId = '';
+
+      Database.getPosts(totalName).then( res => {
+        if (res.length) postId = res[0].id;
+        else postId = -1;
+      });
 
       // Checking if user exist
       if (!userCreated) {
@@ -149,7 +157,7 @@ export class VideoEvents {
       this.multiEvents(this.video, eventsArr, (event) => {
         if (userEvents.arr) {
           let data =
-            new DataModel(uid, location, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
+            new DataModel(uid, this.location, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
 
             formFocus = false;
             switch (event.type) {
@@ -190,7 +198,7 @@ export class VideoEvents {
             let eventType = elemVisibility ? 'ScrollIn' : 'ScrollOut';
 
             let data =
-              new DataModel(uid, location, session, currentDate, device, eventType, this.video.currentTime, event.timeStamp);
+              new DataModel(uid, this.location, session, currentDate, device, eventType, this.video.currentTime, event.timeStamp);
             userEvents.arr.push(data);
           }
         }, 250);
@@ -200,7 +208,7 @@ export class VideoEvents {
       this.multiElementsEvent(this.form, 'input:not([type="submit"])', 'focus', (event) => {
         if (!formFocus) {
           let data =
-            new DataModel(uid, location, session, currentDate, device, 'formfocus', this.video.currentTime, event.timeStamp);
+            new DataModel(uid, this.location, session, currentDate, device, 'formfocus', this.video.currentTime, event.timeStamp);
           userEvents.arr.push(data);
           formFocus = true;
         }
@@ -208,19 +216,17 @@ export class VideoEvents {
 
       // EVENTS FOR SENDING DATA:
       // User has left the viewport to top
-      wrapper.addEventListener('mouseleave', event => {
+      this.mainBlock.addEventListener('mouseleave', event => {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 20) {
-          this.convertSend(
-            this.domain, this.pageName, this.video, userEvents, Database, uid, location, session, currentDate, device, 'userLeave', event.timeStamp, userCreated
+          this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', event.timeStamp, userCreated
           );
         }
       });
 
       // User has clicked a CTA
       ctaBtn.addEventListener('click', event => {
-        this.convertSend(
-          this.domain, this.pageName, this.video, userEvents, Database, uid, location, session, currentDate, device, 'submit', event.timeStamp, userCreated
+        this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', event.timeStamp, userCreated
         );
       });
     });
