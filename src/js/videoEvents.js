@@ -1,9 +1,13 @@
-// import Database from './dataBase';
+/*!
+ * @overview velib - Video Events Statistics lib.
+*/
 import Database from './wpdb';
 import DataModel from './dataModel';
 import deviceInfo from './deviceInfo';
-import 'isomorphic-fetch';
-import "es6-promise/auto";
+
+import 'core-js/features/array/from';
+import 'core-js/features/promise';
+import 'core-js/features/symbol';
 
 // Video Events Main Class
 export class VideoEvents {
