@@ -95,6 +95,7 @@ export class VideoEvents {
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
       console.log('VE Initialized.');
+      const startDate = new Date();
 
       // Dashboard URL
       const dashbouardUrl = window.location.href;
@@ -161,7 +162,7 @@ export class VideoEvents {
       this.multiEvents(this.video, eventsArr, (event) => {
         if (userEvents.arr) {
           let data =
-            new DataModel(uid, this.location, session, currentDate, device, event.type, this.video.currentTime, event.timeStamp);
+            new DataModel(uid, this.location, session, currentDate, device, event.type, this.video.currentTime, (new Date())-startDate);
 
             formFocus = false;
             switch (event.type) {
@@ -202,7 +203,7 @@ export class VideoEvents {
             let eventType = elemVisibility ? 'ScrollIn' : 'ScrollOut';
 
             let data =
-              new DataModel(uid, this.location, session, currentDate, device, eventType, this.video.currentTime, event.timeStamp);
+              new DataModel(uid, this.location, session, currentDate, device, eventType, this.video.currentTime, (new Date())-startDate);
             userEvents.arr.push(data);
           }
         }, 250);
@@ -212,7 +213,7 @@ export class VideoEvents {
       this.multiElementsEvent(this.form, 'input:not([type="submit"])', 'focus', (event) => {
         if (!formFocus) {
           let data =
-            new DataModel(uid, this.location, session, currentDate, device, 'formfocus', this.video.currentTime, event.timeStamp);
+            new DataModel(uid, this.location, session, currentDate, device, 'formfocus', this.video.currentTime, (new Date())-startDate);
           userEvents.arr.push(data);
           formFocus = true;
         }
@@ -223,14 +224,14 @@ export class VideoEvents {
       this.mainBlock.addEventListener('mouseleave', event => {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 20) {
-          this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', event.timeStamp, userCreated
+          this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', (new Date())-startDate, userCreated
           );
         }
       });
 
       // User has clicked a CTA
       ctaBtn.addEventListener('click', event => {
-        this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', event.timeStamp, userCreated
+        this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', (new Date())-startDate, userCreated
         );
       });
     });
