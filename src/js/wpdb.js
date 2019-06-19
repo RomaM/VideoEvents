@@ -67,7 +67,7 @@ const WPBD = {
 
     return fetch(`${this.hostname}/wp-json/wp/v2/posts/${id}`, params)
       .then( response => {
-        if (response.ok) {return response.json()};
+        if (response.ok) { return response.json() };
         throw new Error(`Response from the ${this.hostname} wasn't OK!`);
       })
       .catch( error => console.log('%cFetch Error: ', 'color: red;', error.message));

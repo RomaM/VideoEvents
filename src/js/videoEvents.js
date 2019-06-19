@@ -18,11 +18,11 @@ export class VideoEvents {
     this.video = video;
     this.form = form;
     this.location = location;
+    this.postId = '';
   }
 
   // Static Method: Get all data from FireBase
   // static getFBData() {
-  //   console.log('Get Data from FB');
   //   return Database.getServerData()
   //     .then(snapshot => snapshot.val());
   // }
@@ -80,13 +80,16 @@ export class VideoEvents {
       'videoDuration': this.video.duration
     };
 
-    if (!userCreated) localStorage.setItem('veUserCreated', true);
+    if (!userCreated) { localStorage.setItem('veUserCreated', true); }
 
     if (userEvents.arr.length > 0) {
       let data = new DataModel(uid, this.location, session, currentDate, device, eventType, this.video.currentTime, eventTS);
       userEvents.arr.push(data);
       DB.sendEvents(postId, userEvents.arr, pageName, metaData).then(
-        () => { userEvents.arr = []; }
+        res => {
+          userEvents.arr = [];
+          this.postId = res.id;
+        }
       );
     }
   }
@@ -117,6 +120,12 @@ export class VideoEvents {
 
       let totalName = this.domain + '-pageis-' + this.pageName + '-videonameis-' + videoName;
 
+      // Get post from the dashboard by name
+      Database.getPosts(totalName).then( res => {
+        if (res.length) {this.postId = res[0].id;}
+        else {this.postId = -1;}
+      });
+
       const ctaBtn = this.form.querySelectorAll('input[type="submit"]')[0];
       let userCreated = localStorage.getItem('veUserCreated');
       let uid = localStorage.getItem('veUserID');
@@ -134,14 +143,6 @@ export class VideoEvents {
       let interval = null;
       let isMuted = false;
       let formFocus = false;
-
-      // Checking if a Post for a Video page is exist on the Dashboard
-      let postId = '';
-
-      Database.getPosts(totalName).then( res => {
-        if (res.length) postId = res[0].id;
-        else postId = -1;
-      });
 
       // Checking if user exist
       if (!userCreated) {
@@ -224,14 +225,14 @@ export class VideoEvents {
       this.mainBlock.addEventListener('mouseleave', event => {
         const scroll = window.scrollY || window.pageYOffset;
         if (event.offsetY - scroll <= 20) {
-          this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', (new Date())-startDate, userCreated
+          this.convertSend(this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', (new Date())-startDate, userCreated
           );
         }
       });
 
       // User has clicked a CTA
       ctaBtn.addEventListener('click', event => {
-        this.convertSend(postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', (new Date())-startDate, userCreated
+        this.convertSend(this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', (new Date())-startDate, userCreated
         );
       });
     });
