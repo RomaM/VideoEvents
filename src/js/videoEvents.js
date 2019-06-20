@@ -19,6 +19,7 @@ export class VideoEvents {
     this.form = form;
     this.location = location;
     this.postId = '';
+    this.sendingData = {value: false};
   }
 
   // Static Method: Get all data from FireBase
@@ -89,6 +90,11 @@ export class VideoEvents {
         res => {
           userEvents.arr = [];
           this.postId = res.id;
+
+          if (Object.isFrozen(this.sendingData) === false) {
+            this.sendingData.value = false;
+            Object.freeze(this.sendingData);
+          }
         }
       );
     }
@@ -224,9 +230,11 @@ export class VideoEvents {
       // User has left the viewport to top
       this.mainBlock.addEventListener('mouseleave', event => {
         const scroll = window.scrollY || window.pageYOffset;
-        if (event.offsetY - scroll <= 20) {
+        if (event.offsetY - scroll <= 20 && !this.sendingData.value) {
           this.convertSend(this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', (new Date())-startDate, userCreated
           );
+
+          if (Object.isFrozen(this.sendingData) === false) { this.sendingData.value = true; }
         }
       });
 
