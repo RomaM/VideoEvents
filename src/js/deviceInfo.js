@@ -8,8 +8,9 @@ const deviceInfo = () => {
   else if (userAgent.match(/iPhone/i)) result.name = 'iPhone';
   else if (userAgent.match(/iPad/i)) result.name = 'iPad';
   else if (userAgent.match(/iPod/i)) result.name = 'iPod';
-  else if (userAgent.match(/BlackBerry/i)) result.name = 'BlackBerry';
-  else if (userAgent.match(/Windows Phone/i)) result.name = 'WindowsPhone';
+  else if (userAgent.match(/Blackberry|PlayBook|BB10/i)) result.name = 'BlackBerry';
+  else if (userAgent.match(/IEMobile|Windows Phone|Lumia/i)) result.name = 'WindowsPhone';
+  else if (userAgent.match(/Mobile|Tablet|Opera Mini|Opera Mobi|\bSilk/i)) result.name = 'Unknown Mobile';
   else result.name = 'Desktop';
 
   // Result: Device Browser

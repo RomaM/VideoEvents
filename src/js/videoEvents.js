@@ -19,7 +19,8 @@ export class VideoEvents {
     this.form = form;
     this.location = location;
     this.postId = '';
-    this.sendingData = {value: false};
+    // this.sendingData = {value: false};
+    this.sendingData = false;
   }
 
   // Static Method: Get all data from FireBase
@@ -81,20 +82,22 @@ export class VideoEvents {
       'videoDuration': this.video.duration
     };
 
-    if (!userCreated) { localStorage.setItem('veUserCreated', true); }
+    if (userEvents.arr.length > 0 && !this.sendingData) {
+      this.sendingData = true;
+      if (!userCreated) { localStorage.setItem('veUserCreated', true); }
 
-    if (userEvents.arr.length > 0) {
       let data = new DataModel(uid, this.location, session, currentDate, device, eventType, this.video.currentTime, eventTS);
       userEvents.arr.push(data);
       DB.sendEvents(postId, userEvents.arr, pageName, metaData).then(
         res => {
           userEvents.arr = [];
           this.postId = res.id;
+          this.sendingData = false;
 
-          if (Object.isFrozen(this.sendingData) === false) {
-            this.sendingData.value = false;
-            Object.freeze(this.sendingData);
-          }
+          // if (Object.isFrozen(this.sendingData) === false) {
+          //   this.sendingData.value = false;
+          //   Object.freeze(this.sendingData);
+          // }
         }
       );
     }
@@ -104,6 +107,7 @@ export class VideoEvents {
   init() {
     document.addEventListener( 'DOMContentLoaded', () => {
       console.log('VE Initialized.');
+
       const startDate = new Date();
 
       // Dashboard URL
@@ -227,20 +231,44 @@ export class VideoEvents {
       });
 
       // EVENTS FOR SENDING DATA:
+
+      // User came from mobile device. Send data if events exist and no more than once in 5 seconds
+      if (device.name.toLowerCase() != 'desktop') {
+        let counter = 0;
+        setInterval(() => { counter += 5; }, 5000);
+        this.mainBlock.addEventListener('touchstart', e => {
+          if (userEvents.arr.length > 0 && counter >= 5) {
+            counter = 0;
+            this.convertSend(
+              this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'mobileTouch', (new Date())-startDate, userCreated
+            );
+
+            // if (Object.isFrozen(this.sendingData) === false) {
+            //   this.sendingData.value = true;
+            // }
+          }
+        });
+      }
+
       // User has left the viewport to top
       this.mainBlock.addEventListener('mouseleave', event => {
         const scroll = window.scrollY || window.pageYOffset;
-        if (event.offsetY - scroll <= 20 && !this.sendingData.value) {
-          this.convertSend(this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', (new Date())-startDate, userCreated
+        // if (event.offsetY - scroll <= 20 && !this.sendingData.value) {
+        if (event.offsetY - scroll <= 20) {
+          this.convertSend(
+            this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'userLeave', (new Date())-startDate, userCreated
           );
 
-          if (Object.isFrozen(this.sendingData) === false) { this.sendingData.value = true; }
+          // if (Object.isFrozen(this.sendingData) === false) {
+          //   this.sendingData.value = true;
+          // }
         }
       });
 
       // User has clicked a CTA
       ctaBtn.addEventListener('click', event => {
-        this.convertSend(this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', (new Date())-startDate, userCreated
+        this.convertSend(
+          this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', (new Date())-startDate, userCreated
         );
       });
     });
