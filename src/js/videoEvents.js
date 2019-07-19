@@ -132,7 +132,7 @@ export class VideoEvents {
 
       // Get post from the dashboard by name
       Database.getPosts(totalName).then( res => {
-        if (res.length) {this.postId = res[0].id;}
+        if (res && res.length) {this.postId = res[0].id;}
         else {this.postId = -1;}
       });
 
@@ -149,7 +149,8 @@ export class VideoEvents {
         arr: []
       };
       const eventsArr =
-        ['play', 'pause', 'seeking', 'seeked', 'timeupdate', 'volumechange', 'ended', 'abort', 'emptied', 'error', 'stalled'];
+        [ 'play', 'pause', 'seeking', 'seeked', 'timeupdate', 'volumechange',
+          'ended', 'abort', 'emptied', 'error', 'stalled', 'canplay' ];
       let interval = null;
       let isMuted = false;
       let formFocus = false;
