@@ -131,9 +131,16 @@ export class VideoEvents {
       let totalName = this.domain + '-pageis-' + this.pageName + '-videonameis-' + videoName;
 
       // Get post from the dashboard by name
+      this.sendingData = true;
       Database.getPosts(totalName).then( res => {
-        if (res && res.length) {this.postId = res[0].id;}
-        else {this.postId = -1;}
+        if (res && res.length) {
+          this.sendingData = false;
+          this.postId = res[0].id;
+        }
+        else {
+          this.sendingData = false;
+          this.postId = -1;
+        }
       });
 
       const ctaBtn = this.form.querySelectorAll('input[type="submit"]')[0];
