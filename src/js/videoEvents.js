@@ -121,9 +121,10 @@ export class VideoEvents {
       //   Database.token = token;
       // });
 
-      let videoName = this.video.src;
-      if (!videoName.length) {
-        videoName = this.video.getElementsByTagName('source')[0].src;
+      let videoName;
+      videoName = this.video ? this.video.src : '';
+      if (!videoName.length && this.video) {
+        videoName = this.video.getElementsByTagName('source')[0] ? this.video.getElementsByTagName('source')[0].src : '';
       }
       videoName = videoName.replace(/http:\/\/|https:\/\/|cdn6.binary.limited|cdn.pushrcdn|.com|.mp4/g, '');
       videoName = videoName.replace(/[/.*+?^${}()|[\]\\]/g, '-');
