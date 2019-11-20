@@ -184,29 +184,29 @@ export class VideoEvents {
           let data =
             new DataModel(uid, this.location, session, currentDate, device, event.type, this.video.currentTime, (new Date())-startDate);
 
-            formFocus = false;
-            switch (event.type) {
-              case 'seeking':
-                break;
-              case 'seeked':
+          formFocus = false;
+          switch (event.type) {
+            case 'seeking':
+              break;
+            case 'seeked':
+              userEvents.arr.push(data);
+              break;
+            case 'timeupdate':
+              break;
+            case 'volumechange':
+              if (this.video.volume == 0 || this.video.muted) {
+                isMuted = true;
+                data.event = 'muted';
                 userEvents.arr.push(data);
-                break;
-              case 'timeupdate':
-                break;
-              case 'volumechange':
-                if (this.video.volume == 0 || this.video.muted) {
-                  isMuted = true;
-                  data.event = 'muted';
-                  userEvents.arr.push(data);
-                } else if (this.video.volume > 0 && isMuted) {
-                  isMuted = false;
-                  data.event = 'unmuted';
-                  userEvents.arr.push(data);
-                }
-                break;
-              default:
+              } else if (this.video.volume > 0 && isMuted) {
+                isMuted = false;
+                data.event = 'unmuted';
                 userEvents.arr.push(data);
-            }
+              }
+              break;
+            default:
+              userEvents.arr.push(data);
+          }
         }
       });
 
@@ -244,7 +244,7 @@ export class VideoEvents {
       // User came from mobile device. Send data if events exist and no more than once in 5 seconds
       if (device.name.toLowerCase() != 'desktop') {
         let counter = 0;
-        setInterval(() => { counter += 5; }, 5000);
+        setInterval(() => { counter += 5; }, 3500);
         this.mainBlock.addEventListener('touchstart', e => {
           if (userEvents.arr.length > 0 && counter >= 5) {
             counter = 0;
@@ -275,7 +275,15 @@ export class VideoEvents {
       });
 
       // User has clicked a CTA
-      ctaBtn.addEventListener('click', event => {
+      let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+
+      ctaBtn.addEventListener(touchEvent, event => {
+        if (touchEvent == 'touchstart') {
+          let data =
+            new DataModel(uid, this.location, session, currentDate, device, 'mobileSubmit', this.video.currentTime, (new Date())-startDate);
+          userEvents.arr.push(data);
+        }
+
         this.convertSend(
           this.postId, totalName, userEvents, Database, uid, session, currentDate, device, 'submit', (new Date())-startDate, userCreated
         );
