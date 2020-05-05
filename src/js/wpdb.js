@@ -1,7 +1,7 @@
 // Firebase Configuration Object and Initialization
 
 const WPBD = {
-  hostname: 'https://staging.marketingvideos-dashboard.com',
+  hostname: 'http://video-events.kl.com.ua/',
   token: '',
 
   // Method: Get the token from the Dashboard

@@ -113,7 +113,7 @@ export class VideoEvents {
       // Dashboard URL
       const dashbouardUrl = window.location.href;
       if (dashbouardUrl.indexOf('staging') == -1 && dashbouardUrl.indexOf('devel') == -1 && dashbouardUrl.indexOf('localhost') == -1) {
-        Database.hostname = 'https://marketingvideos-dashboard.com';
+        Database.hostname = 'http://video-events.kl.com.ua/';
       }
 
       // Getting JWT from the Dashboard
